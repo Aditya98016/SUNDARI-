@@ -1,0 +1,98 @@
+const startBtn = document.getElementById("start-btn");
+const responsePara = document.getElementById("response");
+
+const speak = (text) => {
+    let utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "hi-IN";
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+};
+
+window.onload = () => {
+    setTimeout(() => {
+        speak("डियर, मैं आपकी कैसे मदद कर सकती हूँ?");
+    }, 1000);
+};
+
+const listen = () => {
+    if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+        responsePara.textContent = "❌ आपका ब्राउज़र Speech Recognition सपोर्ट नहीं करता।";
+        speak("मुझे खेद है, आपका ब्राउज़र मुझे सुन नहीं सकता।");
+        return;
+    }
+
+    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "hi-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onstart = () => {
+        responsePara.textContent = "🎤 सुन रही हूँ...";
+    };
+
+    recognition.onresult = (event) => {
+        let command = event.results[0][0].transcript.toLowerCase();
+        responsePara.textContent = `👤 आपने कहा: ${command}`;
+
+        if (command.includes("कैसी हो")) {
+            speak("मैं बहुत अच्छी हूँ, आप कैसे हैं?");
+        } else if (command.includes("नाम क्या है")) {
+            speak("मेरा नाम सुंदरी है।");
+        } else if (command.includes("बंद हो जाओ")) {
+            speak("ठीक है, अलविदा!");
+        } else {
+            speak("मुझे यह कमांड समझ नहीं आई।");
+        }
+    };
+
+    recognition.onerror = (error) => {
+        console.error("Speech Recognition Error:", error);
+        responsePara.textContent = "❌ सुनने में समस्या हुई।";
+        speak("मुझे आपकी आवाज़ ठीक से सुनाई नहीं दी।");
+    };
+
+    recognition.onspeechend = () => {
+        recognition.stop();
+    };
+};
+
+startBtn.addEventListener("click", () => {
+    speak("डियर, मैं आपकी कैसे मदद कर सकती हूँ?");
+    listen();
+});
+const controlDevice = (command) => {
+    if ("wakeLock" in navigator) {
+        navigator.wakeLock.request("screen"); // स्क्रीन ऑन रखने के लिए
+    }
+
+    // 🔦 Flashlight Control
+    if (command.includes("टॉर्च ऑन")) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", torch: true } });
+        speak("फ़्लैशलाइट चालू हो गई।");
+    } else if (command.includes("टॉर्च बंद")) {
+        navigator.mediaDevices.getUserMedia({ video: false });
+        speak("फ़्लैशलाइट बंद कर दी गई।");
+    }
+
+    // 🔊 Volume Control
+    if (command.includes("वॉल्यूम बढ़ाओ")) {
+        let audio = document.createElement("audio");
+        audio.volume = Math.min(audio.volume + 0.1, 1);
+        speak("वॉल्यूम बढ़ा दिया गया।");
+    } else if (command.includes("वॉल्यूम घटाओ")) {
+        let audio = document.createElement("audio");
+        audio.volume = Math.max(audio.volume - 0.1, 0);
+        speak("वॉल्यूम घटा दिया गया।");
+    }
+
+    // 🌞 Brightness Control
+    if (command.includes("ब्राइटनेस बढ़ाओ")) {
+        document.body.style.filter = "brightness(150%)";
+        speak("ब्राइटनेस बढ़ा दी गई।");
+    } else if (command.includes("ब्राइटनेस घटाओ")) {
+        document.body.style.filter = "brightness(50%)";
+        speak("ब्राइटनेस घटा दी गई।");
+    }
+};

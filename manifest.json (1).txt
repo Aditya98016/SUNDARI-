@@ -1,0 +1,21 @@
+{
+  "name": "Sundari Assistant",
+  "short_name": "Sundari",
+  "description": "वॉयस कमांड से मोबाइल कंट्रोल करने वाला असिस्टेंट",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6200ea",
+  "icons": [
+    {
+      "src": "/vecteezy_business-woman-isolated-illustration_24558261.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/vecteezy_ai-generated-portrait-of-lovely-young-woman-clip-art_40216258.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
